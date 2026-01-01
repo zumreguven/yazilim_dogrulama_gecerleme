@@ -1,0 +1,1 @@
+# yazilim_dogrulama_gecerleme
