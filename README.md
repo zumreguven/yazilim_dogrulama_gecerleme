@@ -1,1 +1,2 @@
 # yazilim_dogrulama_gecerleme
+Yazılım Doğrulama Projesi
