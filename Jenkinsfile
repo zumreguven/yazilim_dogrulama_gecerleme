@@ -127,7 +127,7 @@ pipeline {
         docker compose -f ${COMPOSE_FILE} down -v
       '''
       echo "🏁 Bitti: ${new Date()}"
-      echo '========================================'
+      echo '========================================='
     }
   }
 }
