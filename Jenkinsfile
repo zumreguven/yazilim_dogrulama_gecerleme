@@ -13,13 +13,13 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-            stage('Wait for Services') {
-                steps {
-                    sh '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
-                }
-            }
                 sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
                 sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+            }
+        }
+        stage('Wait for Services') {
+            steps {
+                sh '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
             }
         }
         stage('Clean Docker & Workspace') {
