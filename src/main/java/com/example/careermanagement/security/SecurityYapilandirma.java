@@ -61,24 +61,28 @@ public class SecurityYapilandirma {
 
         // Yetkilendirme kuralları
         http.authorizeHttpRequests(auth -> auth
-                // Halka açık endpoint'ler
+                // Swagger ve API dokümantasyonu için izinler
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
+                        "/swagger-ui.html", "/webjars/**", "/v3/api-docs.yaml").permitAll()
+
+                // H2 Console için izinler
+                .requestMatchers("/h2-console/**").permitAll()
+
+                // Statik kaynaklar için izinler (explicit short patterns to avoid pattern parser issues)
                 .requestMatchers(
                         "/",
                         "/index.html",
-                        "/favicon.ico",
-                        "/**/*.png",
-                        "/**/*.gif",
-                        "/**/*.svg",
-                        "/**/*.jpg",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js"
+                        "/giris",
+                        "/giris.html",
+                        "/kariyer/hedef/yeni",
+                        "/kariyer/hedef/yeni.html",
+                        "/cikis",
+                        "/favicon.ico"
                 ).permitAll()
+
+                // Auth ve test endpoint'leri
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
 
                 // Tüm diğer istekler için kimlik doğrulama gerekli
@@ -86,8 +90,8 @@ public class SecurityYapilandirma {
         );
 
         // H2 Console için frame options
-        http.headers(headers ->
-                headers.frameOptions(frame -> frame.sameOrigin())
+        http.headers(headers -> headers
+                .frameOptions(frame -> frame.sameOrigin())
         );
 
         // JWT Filtresini ekle

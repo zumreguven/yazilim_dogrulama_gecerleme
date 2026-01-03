@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Yeni Kariyer Hedefi</title>
+</head>
+<body>
+  <h1>Yeni Kariyer Hedefi</h1>
+  <div class="alert-success" style="display:none;color:green;"></div>
+  <form id="hedef">
+    <label>Başlık</label>
+    <input id="baslik" />
+    <label>Açıklama</label>
+    <textarea id="aciklama"></textarea>
+    <button id="kaydet" type="submit">Kaydet</button>
+  </form>
+  <script>
+    document.getElementById('hedef').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var msg = document.querySelector('.alert-success');
+      msg.style.display = 'block';
+      msg.innerText = 'Kariyer hedefi başarıyla oluşturuldu';
+    });
+  </script>
+</body>
+</html>

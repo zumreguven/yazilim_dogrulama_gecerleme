@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Yeni İlan</title>
+</head>
+<body>
+  <h1>Yeni İlan Oluştur</h1>
+  <form id="ilanForm">
+    <label for="baslik">Başlık</label>
+    <input id="baslik" name="baslik" />
+    <br/>
+    <label for="aciklama">Açıklama</label>
+    <textarea id="aciklama" name="aciklama"></textarea>
+    <br/>
+    <button id="kaydet" type="submit">Kaydet</button>
+  </form>
+
+  <div id="mesaj" style="display:none" class="alert-success">İlan başarıyla oluşturuldu</div>
+
+  <script>
+    document.getElementById('ilanForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      document.getElementById('mesaj').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

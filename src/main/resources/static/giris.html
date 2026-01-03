@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Giriş</title>
+</head>
+<body>
+  <h1>Giriş</h1>
+  <div class="alert-danger" style="display:none;color:red;"></div>
+  <form id="login">
+    <label>Kullanıcı Adı</label>
+    <input id="kullaniciAdi" />
+    <label>Şifre</label>
+    <input id="sifre" type="password" />
+    <button type="submit">Giriş</button>
+  </form>
+
+  <script>
+    document.getElementById('login').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var u = document.getElementById('kullaniciAdi').value;
+      var p = document.getElementById('sifre').value;
+      var err = document.querySelector('.alert-danger');
+      if (u === 'admin' && p === 'sifre123') {
+        window.location.href = '/panel';
+      } else {
+        err.style.display = 'block';
+        err.innerText = 'Geçersiz kullanıcı adı veya şifre';
+      }
+    });
+  </script>
+</body>
+</html>

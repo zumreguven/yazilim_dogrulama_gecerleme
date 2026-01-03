@@ -1,0 +1,1 @@
+{"uuid":"093d85a7-b722-4e6f-b514-59ba3cbfc583","name":"whenEmailIsInvalid_thenReturnFalse(String)","children":["aadce7ea-aa22-4892-8b6d-b28e9364e177","d18d020c-f2cd-4a37-afd3-3b4fdd02f7dc","b315a57e-73e5-4f21-946d-ae0b48d06cef","060dbe54-1b68-49b4-9e2b-124d1a809eb0"],"befores":[],"afters":[],"start":1767434285521,"stop":1767434285579}

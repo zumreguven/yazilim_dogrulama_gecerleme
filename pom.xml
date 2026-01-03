@@ -28,6 +28,10 @@
         <webdrivermanager.version>5.6.2</webdrivermanager.version>
         <testcontainers.version>1.19.3</testcontainers.version>
         <selenium.headless>true</selenium.headless>
+        <!-- Allow skipping JaCoCo (useful if running with newer JVM locally) -->
+        <jacoco.skip>false</jacoco.skip>
+        <!-- Tag to exclude tests by default (e.g., selenium) -->
+        <excludedTags></excludedTags>
     </properties>
 
     <dependencies>
@@ -36,6 +40,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -186,6 +192,14 @@
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Allure (JUnit5) -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>2.21.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -195,6 +209,10 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
+                <configuration>
+                    <!-- Allow skipping JaCoCo when the property is provided -->
+                    <skip>${jacoco.skip}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -223,8 +241,19 @@
                     </includes>
                     <systemPropertyVariables>
                         <selenium.headless>${selenium.headless}</selenium.headless>
+                        <selenium.remote.url>${selenium.remote.url}</selenium.remote.url>
+                        <app.baseUrl>${app.baseUrl}</app.baseUrl>
                     </systemPropertyVariables>
+                    <!-- Allow excluding JUnit tags (e.g., selenium) via -DexcludedTags=selenium -->
+                    <excludedTags>${excludedTags}</excludedTags>
                 </configuration>
+            </plugin>
+
+            <!-- Allure Maven Plugin -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.11.2</version>
             </plugin>
 
             <!-- Failsafe Plugin -->
@@ -262,4 +291,24 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>selenium</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <!-- These are defaults; CI can override with -D flags -->
+                <selenium.remote.url>http://selenium-hub:4444/wd/hub</selenium.remote.url>
+                <app.baseUrl>http://app:8080</app.baseUrl>
+            </properties>
+        </profile>
+        <profile>
+            <id>integration</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
 </project>

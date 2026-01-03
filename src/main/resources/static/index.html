@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Career Management</title>
+</head>
+<body>
+  <h1>Welcome to Career Management</h1>
+  <div>
+    <input id="aranan" placeholder="Ara" />
+    <button id="ara">Ara</button>
+  </div>
+
+  <div id="ilan-list"></div>
+
+  <script>
+    document.getElementById('ara').addEventListener('click', function () {
+      var term = document.getElementById('aranan').value;
+      var list = document.getElementById('ilan-list');
+      list.innerHTML = '';
+      if (term && term.length > 0) {
+        for (var i = 1; i <= 3; i++) {
+          var div = document.createElement('div');
+          div.className = 'ilan-item';
+          div.innerText = term + ' ilan ' + i;
+          list.appendChild(div);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

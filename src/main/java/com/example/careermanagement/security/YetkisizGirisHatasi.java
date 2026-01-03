@@ -20,6 +20,12 @@ public class YetkisizGirisHatasi implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
         logger.error("Yetkisiz giriş hatası: {}", authException.getMessage());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Hata: Yetkiniz yok!");
+        String uri = request.getRequestURI();
+        // If the request looks like an API call, return 401; otherwise redirect to the login page so browsers see the login form.
+        if (uri != null && uri.startsWith("/api/")) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Hata: Yetkiniz yok!");
+        } else {
+            response.sendRedirect("/giris");
+        }
     }
 }
