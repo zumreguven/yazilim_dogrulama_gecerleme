@@ -1,44 +1,104 @@
 pipeline {
     agent any
-
-    tools {
     options {
         timeout(time: 30, unit: 'MINUTES')
     }
+    tools {
         maven 'Maven 3.9.9'
     }
-
     environment {
         SELENIUM_HEADLESS = 'true'
     }
-
     stages {
-        stage('Checkout') {
         stage('Temizlik (Port/Container)') {
             steps {
                 sh 'docker compose -f docker-compose.ci.yml down -v || true'
                 sh 'docker system prune -af --volumes || true'
             }
         }
+        stage('Checkout') {
             steps {
                 checkout scm
-                    agent any
-                    options {
-                        timeout(time: 30, unit: 'MINUTES')
-                    }
-                    tools {
-                        maven 'Maven 3.9.9'
-                    }
-                    environment {
-                        SELENIUM_HEADLESS = 'true'
-                    }
-                    stages {
-                        stage('Temizlik (Port/Container)') {
-                            steps {
-                                sh 'docker compose -f docker-compose.ci.yml down -v || true'
-                                sh 'docker system prune -af --volumes || true'
-                            }
-                        }
+                sh 'echo "JENKINS WORKSPACE: $WORKSPACE"'
+                sh 'pwd'
+                sh 'ls -l $WORKSPACE/scripts/ || echo "$WORKSPACE/scripts klasörü yok"'
+                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
+                sh 'echo "JENKINS_WORKSPACE=$WORKSPACE" > .env'
+                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
+                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                sh 'echo "[DEBUG] Checkout sonrası scripts klasörü ve wait-for-services.sh durumu yukarıda"'
+            }
+        }
+        stage('Clean Docker & Workspace') {
+            steps {
+                sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+                sh 'docker system prune -af --volumes || true'
+                sh 'mvn clean'
+            }
+        }
+        stage('Wait for Services') {
+            steps {
+                sh 'bash /workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
+            }
+        }
+        stage('Selenium Test: GirisTesti') {
+            steps {
+                sh 'mvn -Dtest=GirisTesti test -Pselenium'
+            }
+        }
+        stage('Selenium Test: LogoutTest') {
+            steps {
+                sh 'mvn -Dtest=LogoutTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: SearchJobTest') {
+            steps {
+                sh 'mvn -Dtest=SearchJobTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: RegisterTest') {
+            steps {
+                sh 'mvn -Dtest=RegisterTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: ProfileTest') {
+            steps {
+                sh 'mvn -Dtest=ProfileTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: NotificationTest') {
+            steps {
+                sh 'mvn -Dtest=NotificationTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: SettingsTest') {
+            steps {
+                sh 'mvn -Dtest=SettingsTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: MessageTest') {
+            steps {
+                sh 'mvn -Dtest=MessageTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: ApplicationTest') {
+            steps {
+                sh 'mvn -Dtest=ApplicationTest test -Pselenium'
+            }
+        }
+        stage('Selenium Test: AdminTest') {
+            steps {
+                sh 'mvn -Dtest=AdminTest test -Pselenium'
+            }
+        }
+    }
+    post {
+        always {
+            sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+            sh 'docker system prune -af --volumes || true'
+        }
+    }
+}
                         stage('Checkout') {
                             steps {
                                 checkout scm
