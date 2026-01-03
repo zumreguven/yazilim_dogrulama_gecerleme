@@ -23,6 +23,7 @@ pipeline {
             steps {
                 checkout scm
                 sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
+                sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
             }
         }
 
