@@ -23,8 +23,10 @@ pipeline {
                 sh 'echo "JENKINS_WORKSPACE=$WORKSPACE" > .env'
                 sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "$WORKSPACE/scripts/wait-for-services.sh yok"'
                 sh 'cat scripts/wait-for-services.sh || echo "scripts/wait-for-services.sh yok"'
-                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
-                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                    sh 'echo "--- PATCHLENMIS docker-compose.ci.yml ---"'
+                    sh 'cat docker-compose.ci.yml'
+                    sh 'ls -l $WORKSPACE/scripts/ || echo "/workspace/scripts/ yok"'
+                    sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh içeriği okunamadı"'
             }
         }
         stage('Clean Docker & Workspace') {
@@ -45,7 +47,7 @@ pipeline {
                     sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build --no-cache'
                 }
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
-                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh dosyası yok'"
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/ || echo '/workspace/scripts/ yok'"
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven cat /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh içeriği okunamadı'"
             }
         }
