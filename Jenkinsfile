@@ -39,8 +39,9 @@ pipeline {
                     sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build --no-cache'
                 }
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
-                // Debug: wait-for-services.sh dosyası gerçekten var mı?
-                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/"
+                // wait-for-services.sh dosyasının varlığını ve içeriğini kontrol et
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh dosyası yok'"
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven cat /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh içeriği okunamadı'"
                 // Wait for the application inside the compose network to be healthy by using the maven container
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven bash -lc '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
             }
