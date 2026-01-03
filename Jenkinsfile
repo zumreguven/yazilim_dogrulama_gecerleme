@@ -13,9 +13,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                sh 'cp -r scripts $WORKSPACE/scripts || true'
-                sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
-                sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
+                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
             }
         }
         stage('Clean Docker & Workspace') {
