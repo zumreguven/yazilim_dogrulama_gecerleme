@@ -3,7 +3,6 @@ pipeline {
     options {
         timeout(time: 30, unit: 'MINUTES')
     }
-}
     tools {
         maven 'Maven 3.9.9'
     }
@@ -173,5 +172,7 @@ pipeline {
             sh 'docker system prune -af --volumes || true'
         }
     }
+}
+
 
 
