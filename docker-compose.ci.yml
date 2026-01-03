@@ -47,6 +47,7 @@ services:
       - ./:/workspace
       - ./scripts:/workspace/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./jenkins-m2:/root/.m2
     working_dir: /workspace
     environment:
       DB_HOST: postgres
