@@ -2,6 +2,7 @@ pipeline {
     agent any
     options {
         timeout(time: 30, unit: 'MINUTES')
+    }
     stages {
         stage('Temizlik (Port/Container)') {
             steps {
@@ -18,7 +19,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh './mvnw clean install'
             }
         }
         stage('Unit Tests') {
@@ -33,9 +34,9 @@ pipeline {
                 junit '**/target/failsafe-reports/*.xml'
             }
         }
-        stage('Docker Up') {
+        stage('Start Docker Containers') {
             steps {
-                sh 'docker compose -f docker-compose.ci.yml up -d --build'
+                sh 'docker-compose up -d'
             }
         }
         stage('Wait for Services') {
@@ -43,60 +44,26 @@ pipeline {
                 sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
             }
         }
-        stage('Selenium Test: GirisTesti') {
+        stage('Selenium Test Scenario 1') {
             steps {
-                sh 'mvn -Dtest=GirisTesti test -Pselenium'
-                junit '**/target/selenium-reports/*.xml'
+                sh 'python scripts/selenium_test1.py'
             }
         }
-        stage('Selenium Test: LogoutTest') {
+        stage('Selenium Test Scenario 2') {
             steps {
-                sh 'mvn -Dtest=LogoutTest test -Pselenium'
-                junit '**/target/selenium-reports/*.xml'
+                sh 'python scripts/selenium_test2.py'
             }
         }
-                stage('Build') {
-                    steps {
-                        // 2. Kodları build et
-                        sh './mvnw clean install'
-                    }
-                }
+        stage('Selenium Test Scenario 3') {
+            steps {
+                sh 'python scripts/selenium_test3.py'
+            }
         }
     }
     post {
         always {
             sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
             sh 'docker system prune -af --volumes || true'
-        }
-    }
-}
-        always {
-            sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
-            sh 'docker system prune -af --volumes || true'
-                stage('Start Docker Containers') {
-                    steps {
-                        // 5. Docker container'ları başlat
-                        sh 'docker-compose up -d'
-                    }
-                }
-                stage('Selenium Test Scenario 1') {
-                    steps {
-                        // 6.1 Selenium test senaryosu çalıştır
-                        sh 'python scripts/selenium_test1.py'
-                    }
-                }
-                stage('Selenium Test Scenario 2') {
-                    steps {
-                        // 6.2 Selenium test senaryosu çalıştır
-                        sh 'python scripts/selenium_test2.py'
-                    }
-                }
-                stage('Selenium Test Scenario 3') {
-                    steps {
-                        // 6.3 Selenium test senaryosu çalıştır
-                        sh 'python scripts/selenium_test3.py'
-                    }
-                }
         }
     }
 }
