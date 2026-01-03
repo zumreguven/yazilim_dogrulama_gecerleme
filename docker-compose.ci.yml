@@ -33,7 +33,7 @@ services:
       - postgres
     volumes:
       - ./:/workspace
-      - ./scripts:/workspace/scripts:ro
+      - /var/jenkins_home/workspace/kariyer/scripts:/workspace/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8082:8080" # CI için sabit, localde çakışmaz
@@ -45,7 +45,7 @@ services:
       dockerfile: docker/maven-with-docker/Dockerfile
     volumes:
       - ./:/workspace
-      - ./scripts:/workspace/scripts:ro
+      - /var/jenkins_home/workspace/kariyer/scripts:/workspace/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /workspace
     environment:
