@@ -37,6 +37,13 @@ pipeline {
             steps {
                 retry(3) {
                     sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build --no-cache'
+                        stage('Checkout') {
+                            steps {
+                                checkout scm
+                                sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
+                                sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                            }
+                        }
                 }
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
                 // wait-for-services.sh dosyasının varlığını ve içeriğini kontrol et
