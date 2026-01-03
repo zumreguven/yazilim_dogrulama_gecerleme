@@ -14,7 +14,7 @@ pipeline {
         stage('Clean Docker & Workspace') {
             steps {
                 // Tüm container, network, volume ve eski build kalıntılarını temizle
-                sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+                sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
                 sh 'docker system prune -af --volumes || true'
                 sh 'mvn clean'
             }
@@ -34,20 +34,20 @@ pipeline {
         stage('Start Services (Docker Compose)') {
             steps {
                 retry(3) {
-                    sh 'docker-compose -f docker-compose.ci.yml build --no-cache'
+                    sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build --no-cache'
                 }
-                sh 'docker-compose -f docker-compose.ci.yml up -d --force-recreate'
+                sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
                 // Debug: wait-for-services.sh dosyası gerçekten var mı?
-                sh "docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/"
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/"
                 // Wait for the application inside the compose network to be healthy by using the maven container
-                sh "docker-compose -f docker-compose.ci.yml run --rm maven bash -lc '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven bash -lc '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
             }
         }
 
         stage('Unit Tests') {
             steps {
                 // Run unit tests inside the maven container (so reports are written to host volume)
-                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipITs=true test -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipITs=true test -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
             }
             post {
                 always {
@@ -59,7 +59,7 @@ pipeline {
         stage('Integration Tests') {
             steps {
                 // Run integration tests (failsafe) inside maven container
-                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipTests=true verify -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipTests=true verify -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
             }
             post {
                 always {
@@ -70,7 +70,7 @@ pipeline {
 
         stage('Selenium: Login') {
             steps {
-                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=GirisTesti test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=GirisTesti test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always {
