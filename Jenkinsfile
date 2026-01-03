@@ -37,21 +37,56 @@ pipeline {
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh dosyası yok'"
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven cat /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh içeriği okunamadı'"
-                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven bash -lc '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
+            stage('Selenium Test: GirisTesti') {
+                steps {
+                    sh 'mvn -Dtest=GirisTesti test -Pselenium'
+                }
             }
-        }
-        stage('Wait for Services') {
-            steps {
-                sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
+            stage('Selenium Test: LogoutTest') {
+                steps {
+                    sh 'mvn -Dtest=LogoutTest test -Pselenium'
+                }
             }
-        }
-        // Diğer Selenium ve rapor aşamalarını buraya ekleyebilirsin
-    }
-
-    post {
-        always {
-            sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
-            sh 'docker system prune -af --volumes || true'
+            stage('Selenium Test: SearchJobTest') {
+                steps {
+                    sh 'mvn -Dtest=SearchJobTest test -Pselenium'
+                }
+            }
+            stage('Selenium Test: RegisterTest') {
+                steps {
+                    sh 'mvn -Dtest=RegisterTest test -Pselenium'
+                }
+            }
+            stage('Selenium Test: ProfileTest') {
+                steps {
+                    sh 'mvn -Dtest=ProfileTest test -Pselenium'
+                }
+            }
+            stage('Selenium Test: NotificationTest') {
+                steps {
+                    sh 'mvn -Dtest=NotificationTest test -Pselenium'
+                }
+            }
+            stage('Selenium Test: SettingsTest') {
+                steps {
+                    sh 'mvn -Dtest=SettingsTest test -Pselenium'
+                }
+            }
+            stage('Selenium Test: MessageTest') {
+                steps {
+                    sh 'mvn -Dtest=MessageTest test -Pselenium'
+                }
+            }
+            stage('Selenium Test: ApplicationTest') {
+                steps {
+                    sh 'mvn -Dtest=ApplicationTest test -Pselenium'
+                }
+            }
+            stage('Selenium Test: AdminTest') {
+                steps {
+                    sh 'mvn -Dtest=AdminTest test -Pselenium'
+                }
+            }
         }
     }
 }
