@@ -55,11 +55,12 @@ pipeline {
                 junit '**/target/selenium-reports/*.xml'
             }
         }
-        stage('Selenium Test: SearchJobTest') {
-            steps {
-                sh 'mvn -Dtest=SearchJobTest test -Pselenium'
-                junit '**/target/selenium-reports/*.xml'
-            }
+                stage('Build') {
+                    steps {
+                        // 2. Kodları build et
+                        sh './mvnw clean install'
+                    }
+                }
         }
     }
     post {
@@ -72,6 +73,30 @@ pipeline {
         always {
             sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
             sh 'docker system prune -af --volumes || true'
+                stage('Start Docker Containers') {
+                    steps {
+                        // 5. Docker container'ları başlat
+                        sh 'docker-compose up -d'
+                    }
+                }
+                stage('Selenium Test Scenario 1') {
+                    steps {
+                        // 6.1 Selenium test senaryosu çalıştır
+                        sh 'python scripts/selenium_test1.py'
+                    }
+                }
+                stage('Selenium Test Scenario 2') {
+                    steps {
+                        // 6.2 Selenium test senaryosu çalıştır
+                        sh 'python scripts/selenium_test2.py'
+                    }
+                }
+                stage('Selenium Test Scenario 3') {
+                    steps {
+                        // 6.3 Selenium test senaryosu çalıştır
+                        sh 'python scripts/selenium_test3.py'
+                    }
+                }
         }
     }
 }
