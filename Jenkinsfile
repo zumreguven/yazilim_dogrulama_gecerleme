@@ -11,6 +11,14 @@ pipeline {
     }
 
     stages {
+        stage('Clean Docker & Workspace') {
+            steps {
+                // Tüm container, network, volume ve eski build kalıntılarını temizle
+                sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+                sh 'docker system prune -af --volumes || true'
+                sh 'mvn clean'
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout scm
@@ -28,7 +36,7 @@ pipeline {
                 retry(3) {
                     sh 'docker-compose -f docker-compose.ci.yml build --no-cache'
                 }
-                sh 'docker-compose -f docker-compose.ci.yml up -d'
+                sh 'docker-compose -f docker-compose.ci.yml up -d --force-recreate'
                 // Debug: wait-for-services.sh dosyası gerçekten var mı?
                 sh "docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/"
                 // Wait for the application inside the compose network to be healthy by using the maven container
@@ -162,6 +170,7 @@ pipeline {
     post {
         always {
             sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+            sh 'docker system prune -af --volumes || true'
         }
     }
 }

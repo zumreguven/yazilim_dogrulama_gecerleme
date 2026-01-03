@@ -7,8 +7,9 @@ services:
       POSTGRES_DB: career_management
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    # Do not bind to host port so we avoid local port conflicts in dev/CI agents
-    # If you need to access Postgres from host, use the separate `docker-compose.yml` instead.
+    # Host portu publish ETME, sadece compose network içinde erişim
+    ports:
+      - "5433:5432" # CI için sabit, localde çakışmaz
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -35,7 +36,9 @@ services:
         condition: service_healthy
       selenium-hub:
         condition: service_started
-    # Not published to host for CI-run; tests run inside compose network and access via http://app:8080
+    ports:
+      - "8082:8080" # CI için sabit, localde çakışmaz
+    # 8082 portundan host'a publish edildi
 
   maven:
     build:
@@ -50,7 +53,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       SELENIUM_REMOTE_URL: http://selenium-hub:4444/wd/hub
-      APP_BASE_URL: http://app:8080
+      APP_BASE_URL: http://app:8081
       # Prefer connecting to a local Docker-in-Docker daemon for Testcontainers on macOS
       DOCKER_HOST: tcp://docker-dind:2375
     depends_on:
