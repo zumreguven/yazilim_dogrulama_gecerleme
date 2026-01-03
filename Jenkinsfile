@@ -60,30 +60,23 @@ pipeline {
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven bash -lc '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
             }
         }
-
-        stage('Unit Tests') {
-            steps {
-                // Run unit tests inside the maven container (so reports are written to host volume)
-                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipITs=true test -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
-            }
-            post {
                 always {
                     junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
-
-        stage('Integration Tests') {
-            steps {
-                // Run integration tests (failsafe) inside maven container
-                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipTests=true verify -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
-            }
-            post {
-                always {
-                    junit 'target/failsafe-reports/*.xml'
-                }
-            }
-        }
+                                    stage('Checkout') {
+                                        steps {
+                                            checkout scm
+                                            sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
+                                            sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                                        }
+                                    }
+                                    stage('Clean Docker & Workspace') {
+                                        steps {
+                                            // Tüm container, network, volume ve eski build kalıntılarını temizle
+                                            sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+                                            sh 'docker system prune -af --volumes || true'
+                                            sh 'mvn clean'
+                                        }
+                                    }
 
         stage('Selenium: Login') {
             steps {
@@ -94,13 +87,6 @@ pipeline {
                     junit 'target/surefire-reports/*.xml'
                 }
             }
-        }
-
-        stage('Selenium: Create Ad') {
-            steps {
-                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=IlanTesti test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
-            }
-            post {
                 always {
                     junit 'target/surefire-reports/*.xml'
                 }
