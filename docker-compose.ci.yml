@@ -31,8 +31,8 @@ services:
 
       # Selenium testlerin RemoteWebDriver ile bağlanması için
       SELENIUM_REMOTE_URL: http://selenium-hub:4444/wd/hub
-    depends_on:
-      postgres:
+      depends_on:
+        - postgres
       - ./:/workspace
       - ./scripts:/workspace/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
