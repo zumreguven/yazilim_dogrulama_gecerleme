@@ -52,6 +52,12 @@ public class BaseSeleniumTest {
         }
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        // Extra defensive check: log cookies after setup to help diagnose "invalid cookie domain" errors
+        try {
+            System.out.println("Selenium cookies after setup: " + driver.manage().getCookies());
+        } catch (Exception ignored) {
+        }
     }
 
     @AfterEach
