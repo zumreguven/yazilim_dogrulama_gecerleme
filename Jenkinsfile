@@ -17,11 +17,6 @@ pipeline {
                 sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
             }
         }
-        stage('Wait for Services') {
-            steps {
-                sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
-            }
-        }
         stage('Clean Docker & Workspace') {
             steps {
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
@@ -44,11 +39,16 @@ pipeline {
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven cat /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh içeriği okunamadı'"
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven bash -lc '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
             }
-            stage('Wait for Services') {
-                steps {
-                    sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
-                }
+        }
+        stage('Wait for Services') {
+            steps {
+                sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
             }
+        }
+        // Diğer Selenium ve rapor aşamalarını buraya ekleyebilirsin
+    }
+
+    post {
         always {
             sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
             sh 'docker system prune -af --volumes || true'
