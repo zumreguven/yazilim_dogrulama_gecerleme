@@ -9,6 +9,13 @@ pipeline {
         // Default to headless Selenium runs
         SELENIUM_HEADLESS = 'true'
     }
+        stage('Checkout') {
+            steps {
+                checkout scm
+                sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
+                sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+            }
+        }
 
     stages {
         stage('Clean Docker & Workspace') {
