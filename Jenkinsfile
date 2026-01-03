@@ -44,7 +44,7 @@ pipeline {
         stage('Start Services (Docker Compose)') {
             steps {
                 retry(3) {
-                    sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build --no-cache'
+                    sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build'
                 }
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/ || echo '/workspace/scripts/ yok'"
