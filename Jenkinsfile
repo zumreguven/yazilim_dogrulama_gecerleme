@@ -22,39 +22,36 @@ pipeline {
         }
             steps {
                 checkout scm
-                sh 'echo "JENKINS WORKSPACE: $WORKSPACE"'
-                sh 'pwd'
-                sh 'ls -l $WORKSPACE/scripts/ || echo "$WORKSPACE/scripts klasörü yok"'
-                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
-                sh 'echo "JENKINS_WORKSPACE=$WORKSPACE" > .env'
-                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
-                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
-                sh 'echo "[DEBUG] Checkout sonrası scripts klasörü ve wait-for-services.sh durumu yukarıda"'
-            }
-        }
-        stage('Clean Docker & Workspace') {
-            steps {
-                sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
-                sh 'docker system prune -af --volumes || true'
-                sh 'mvn clean'
-            }
-        }
-        stage('Build') {
-            steps {
-                sh 'mvn -B -DskipTests=true clean package'
-            }
-        }
-        stage('Start Services (Docker Compose)') {
-            steps {
-                retry(3) {
-                    sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build'
-                }
-                sh 'ls -l scripts/ || echo "scripts klasörü yok (docker-compose up öncesi)"'
-                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok (docker-compose up öncesi)"'
-                sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
-                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/ || echo '/workspace/scripts/ yok'"
-                sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven cat /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh içeriği okunamadı'"
-            }
+                    agent any
+                    options {
+                        timeout(time: 30, unit: 'MINUTES')
+                    }
+                    tools {
+                        maven 'Maven 3.9.9'
+                    }
+                    environment {
+                        SELENIUM_HEADLESS = 'true'
+                    }
+                    stages {
+                        stage('Temizlik (Port/Container)') {
+                            steps {
+                                sh 'docker compose -f docker-compose.ci.yml down -v || true'
+                                sh 'docker system prune -af --volumes || true'
+                            }
+                        }
+                        stage('Checkout') {
+                            steps {
+                                checkout scm
+                                sh 'echo "JENKINS WORKSPACE: $WORKSPACE"'
+                                sh 'pwd'
+                                sh 'ls -l $WORKSPACE/scripts/ || echo "$WORKSPACE/scripts klasörü yok"'
+                                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
+                                sh 'echo "JENKINS_WORKSPACE=$WORKSPACE" > .env'
+                                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
+                                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                                sh 'echo "[DEBUG] Checkout sonrası scripts klasörü ve wait-for-services.sh durumu yukarıda"'
+                            }
+                        }
         }
         stage('Wait for Services') {
             steps {
