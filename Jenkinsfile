@@ -25,16 +25,16 @@ pipeline {
 
         stage('Start Services (Docker Compose)') {
             steps {
-                sh 'docker compose -f docker-compose.ci.yml up -d --build'
+                sh 'docker-compose -f docker-compose.ci.yml up -d --build'
                 // Wait for the application inside the compose network to be healthy by using the maven container
-                sh "docker compose -f docker-compose.ci.yml run --rm maven bash -lc 'scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
+                sh "docker-compose -f docker-compose.ci.yml run --rm maven bash -lc 'scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
             }
         }
 
         stage('Unit Tests') {
             steps {
                 // Run unit tests inside the maven container (so reports are written to host volume)
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipITs=true test -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipITs=true test -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
             }
             post {
                 always {
@@ -46,7 +46,7 @@ pipeline {
         stage('Integration Tests') {
             steps {
                 // Run integration tests (failsafe) inside maven container
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipTests=true verify -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B -DskipTests=true verify -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
             }
             post {
                 always {
@@ -57,7 +57,7 @@ pipeline {
 
         stage('Selenium: Login') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=GirisTesti test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=GirisTesti test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always {
@@ -68,7 +68,7 @@ pipeline {
 
         stage('Selenium: Create Ad') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=IlanTesti test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=IlanTesti test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always {
@@ -79,7 +79,7 @@ pipeline {
 
         stage('Selenium: Home Page') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=HomePageTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=HomePageTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always {
@@ -90,7 +90,7 @@ pipeline {
 
         stage('Selenium: Career Goal') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=CareerGoalTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=CareerGoalTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always { junit 'target/surefire-reports/*.xml' }
@@ -99,7 +99,7 @@ pipeline {
 
         stage('Selenium: Logout') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=LogoutTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=LogoutTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always { junit 'target/surefire-reports/*.xml' }
@@ -108,7 +108,7 @@ pipeline {
 
         stage('Selenium: Invalid Login') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=InvalidLoginTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=InvalidLoginTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always { junit 'target/surefire-reports/*.xml' }
@@ -117,7 +117,7 @@ pipeline {
 
         stage('Selenium: Search Job') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=SearchJobTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=SearchJobTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always { junit 'target/surefire-reports/*.xml' }
@@ -126,7 +126,7 @@ pipeline {
 
         stage('Selenium: Smoke') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=SmokeTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=SmokeTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
             }
             post {
                 always { junit 'target/surefire-reports/*.xml' }
@@ -135,7 +135,7 @@ pipeline {
 
         stage('Generate Allure Report') {
             steps {
-                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B allure:report -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
+                sh "docker-compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B allure:report -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
             }
             post {
                 always {
@@ -156,7 +156,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+            sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
         }
     }
 }
