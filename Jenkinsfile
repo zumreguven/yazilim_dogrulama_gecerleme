@@ -24,13 +24,13 @@ pipeline {
         }
         stage('Unit Tests') {
             steps {
-                sh 'mvn test -Dgroups=unit || true'
+                sh 'mvn test -Dgroups=unit -Dselenium.remote.url=http://selenium-hub:4444/wd/hub || true'
                 junit '**/target/surefire-reports/*.xml'
             }
         }
         stage('Integration Tests') {
             steps {
-                sh 'mvn verify -Dgroups=integration || true'
+                sh 'mvn verify -Dgroups=integration -Dselenium.remote.url=http://selenium-hub:4444/wd/hub || true'
                 junit '**/target/failsafe-reports/*.xml'
             }
         }
