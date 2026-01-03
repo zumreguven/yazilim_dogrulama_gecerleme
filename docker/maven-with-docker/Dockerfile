@@ -9,6 +9,10 @@ RUN apt-get update \
 # Ensure docker CLI is available in PATH
 ENV PATH="/usr/bin:${PATH}"
 
+
+# Kendi scriptlerimizi kopyala
+COPY scripts/ /workspace/scripts/
+
 # Keep the same working dir and user as the base image
 WORKDIR /workspace
 
