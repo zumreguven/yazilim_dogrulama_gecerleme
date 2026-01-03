@@ -13,6 +13,12 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                sh 'echo "JENKINS WORKSPACE: $WORKSPACE"'
+                sh 'pwd'
+                sh 'ls -l $WORKSPACE/scripts/ || echo "$WORKSPACE/scripts klasörü yok"'
+                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
+                sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "$WORKSPACE/scripts/wait-for-services.sh yok"'
+                sh 'cat scripts/wait-for-services.sh || echo "scripts/wait-for-services.sh yok"'
                 sh 'ls -l scripts/ || echo "scripts klasörü yok"'
                 sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
             }
