@@ -2,18 +2,18 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.9.9'
-    }
-
-    environment {
-        // Default to headless Selenium runs
-        SELENIUM_HEADLESS = 'true'
-    }
-        stage('Checkout') {
-            steps {
-                checkout scm
-                sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
+        environment {
+            // Default to headless Selenium runs
+            SELENIUM_HEADLESS = 'true'
+        }
                 sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+            }
+            stage('Checkout') {
+                steps {
+                    checkout scm
+                    sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
+                    sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                }
             }
         }
 
@@ -44,12 +44,12 @@ pipeline {
             steps {
                 retry(3) {
                     sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build --no-cache'
-                        stage('Checkout') {
-                            steps {
-                                checkout scm
-                                sh 'ls -l $WORKSPACE/scripts/ || echo "scripts klasörü yok"'
-                                sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
-                            }
+        post {
+            always {
+                sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
+                sh 'docker system prune -af --volumes || true'
+            }
+        }
                         }
                 }
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
