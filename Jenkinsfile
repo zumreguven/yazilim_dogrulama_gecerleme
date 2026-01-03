@@ -59,6 +59,41 @@ pipeline {
                 sh 'python scripts/selenium_test3.py'
             }
         }
+        stage('Selenium Test Scenario 4') {
+            steps {
+                sh 'python scripts/selenium_test4.py'
+            }
+        }
+        stage('Selenium Test Scenario 5') {
+            steps {
+                sh 'python scripts/selenium_test5.py'
+            }
+        }
+        stage('Selenium Test Scenario 6') {
+            steps {
+                sh 'python scripts/selenium_test6.py'
+            }
+        }
+        stage('Selenium Test Scenario 7') {
+            steps {
+                sh 'python scripts/selenium_test7.py'
+            }
+        }
+        stage('Selenium Test Scenario 8') {
+            steps {
+                sh 'python scripts/selenium_test8.py'
+            }
+        }
+        stage('Selenium Test Scenario 9') {
+            steps {
+                sh 'python scripts/selenium_test9.py'
+            }
+        }
+        stage('Selenium Test Scenario 10') {
+            steps {
+                sh 'python scripts/selenium_test10.py'
+            }
+        }
     }
     post {
         always {
