@@ -98,7 +98,6 @@ pipeline {
             sh 'docker system prune -af --volumes || true'
         }
     }
-}
                         stage('Checkout') {
                             steps {
                                 checkout scm
