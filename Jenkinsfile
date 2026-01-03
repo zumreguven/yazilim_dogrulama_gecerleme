@@ -17,16 +17,9 @@ pipeline {
                 sh 'pwd'
                 sh 'ls -l $WORKSPACE/scripts/ || echo "$WORKSPACE/scripts klasörü yok"'
                 sh 'ls -l scripts/ || echo "scripts klasörü yok"'
-                script {
-                    sh "sed -i 's|__WORKSPACE_PATH__|$WORKSPACE|g' docker-compose.ci.yml"
-                }
                 sh 'echo "JENKINS_WORKSPACE=$WORKSPACE" > .env'
-                sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "$WORKSPACE/scripts/wait-for-services.sh yok"'
-                sh 'cat scripts/wait-for-services.sh || echo "scripts/wait-for-services.sh yok"'
-                    sh 'echo "--- PATCHLENMIS docker-compose.ci.yml ---"'
-                    sh 'cat docker-compose.ci.yml'
-                    sh 'ls -l $WORKSPACE/scripts/ || echo "/workspace/scripts/ yok"'
-                    sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "wait-for-services.sh içeriği okunamadı"'
+                sh 'ls -l scripts/ || echo "scripts klasörü yok"'
+                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
             }
         }
         stage('Clean Docker & Workspace') {
