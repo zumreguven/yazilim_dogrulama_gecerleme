@@ -19,7 +19,7 @@ pipeline {
                 sh 'ls -l scripts/ || echo "scripts klasörü yok"'
                 script {
                     def workspacePath = readFile('workspace_path.txt').trim()
-                    sh "sed -i 's|/var/jenkins_home/workspace/kariyer/scripts|${workspacePath}/scripts|g' docker-compose.ci.yml"
+                    sh "sed -i 's|__WORKSPACE_PATH__|${workspacePath}|g' docker-compose.ci.yml"
                 }
                 sh 'echo "JENKINS_WORKSPACE=$WORKSPACE" > .env'
                 sh 'cat $WORKSPACE/scripts/wait-for-services.sh || echo "$WORKSPACE/scripts/wait-for-services.sh yok"'
