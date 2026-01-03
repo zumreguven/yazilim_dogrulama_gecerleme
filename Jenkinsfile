@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Wait for Services') {
             steps {
-                sh '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
+                sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
             }
         }
         stage('Clean Docker & Workspace') {
