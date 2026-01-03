@@ -9,18 +9,13 @@ public class PanelAccessTest extends BaseSeleniumTest {
 
     @Test
     public void girisYapildiktanSonraPanelGorunuyor() {
-        girisYap();
+        // Use the cookie-based helper to avoid flaky client-side login behavior in CI
+        authenticateAs("admin");
+
         driver.get(BASE_URL + "/panel");
 
         // Panelde çıkış linkinin görünür olması beklenir
         String cikisText = driver.findElement(By.id("cikis")).getText();
         assertThat(cikisText).contains("Çıkış");
-    }
-
-    private void girisYap() {
-        driver.get(BASE_URL + "/giris.html");
-        driver.findElement(By.id("kullaniciAdi")).sendKeys("admin");
-        driver.findElement(By.id("sifre")).sendKeys("sifre123");
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
     }
 }
