@@ -124,6 +124,15 @@ pipeline {
             }
         }
 
+        stage('Selenium: Smoke') {
+            steps {
+                sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -Dtest=SmokeTest test -Dselenium.remote.url=http://selenium-hub:4444/wd/hub -Dapp.baseUrl=http://app:8080 -Dselenium.headless=${SELENIUM_HEADLESS}"
+            }
+            post {
+                always { junit 'target/surefire-reports/*.xml' }
+            }
+        }
+
         stage('Generate Allure Report') {
             steps {
                 sh "docker compose -f docker-compose.ci.yml run --rm -e DB_HOST=postgres maven mvn -B allure:report -Dselenium.headless=${SELENIUM_HEADLESS} -Dapp.baseUrl=http://app:8080 -Dselenium.remote.url=http://selenium-hub:4444/wd/hub"
