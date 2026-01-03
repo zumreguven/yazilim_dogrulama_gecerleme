@@ -2,6 +2,9 @@ pipeline {
     agent any
 
     tools {
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
         maven 'Maven 3.9.9'
     }
 
@@ -11,6 +14,12 @@ pipeline {
 
     stages {
         stage('Checkout') {
+        stage('Temizlik (Port/Container)') {
+            steps {
+                sh 'docker compose -f docker-compose.ci.yml down -v || true'
+                sh 'docker system prune -af --volumes || true'
+            }
+        }
             steps {
                 checkout scm
                 sh 'echo "JENKINS WORKSPACE: $WORKSPACE"'
@@ -49,7 +58,7 @@ pipeline {
         }
         stage('Wait for Services') {
             steps {
-                sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
+                sh 'bash /workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
             }
         }
         stage('Selenium Test: GirisTesti') {
