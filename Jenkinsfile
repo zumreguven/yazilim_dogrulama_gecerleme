@@ -3,6 +3,7 @@ pipeline {
     options {
         timeout(time: 30, unit: 'MINUTES')
     }
+}
     tools {
         maven 'Maven 3.9.9'
     }
