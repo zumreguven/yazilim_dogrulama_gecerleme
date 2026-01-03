@@ -4,7 +4,7 @@ set -euo pipefail
 # Wait for app and selenium to be ready. Usage: wait-for-services.sh <app-url> <selenium-url> <timeout-secs>
 APP_URL=${1:-http://app:8080/actuator/health}
 SELENIUM_URL=${2:-http://selenium-hub:4444/status}
-TIMEOUT=${3:-120}
+TIMEOUT=${3:-30}
 
 echo "Waiting for APP ($APP_URL) and SELENIUM ($SELENIUM_URL) to be ready (timeout=${TIMEOUT}s)..."
 
