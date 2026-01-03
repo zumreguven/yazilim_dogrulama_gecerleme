@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
     # Host portu publish ETME, sadece compose network içinde erişim
     ports:
-      - "2121:5432" # CI için sabit, localde çakışmaz
+      - "32121:5432" # CI için sabit, localde çakışmaz
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -36,7 +36,7 @@ services:
       - ./scripts:/workspace/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "8082:8080" # CI için sabit, localde çakışmaz
+      - "38082:8080" # CI için sabit, localde çakışmaz
     # 8082 portundan host'a publish edildi
 
   maven:
