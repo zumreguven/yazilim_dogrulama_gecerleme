@@ -29,6 +29,8 @@ pipeline {
                     sh 'docker-compose -f docker-compose.ci.yml build --no-cache'
                 }
                 sh 'docker-compose -f docker-compose.ci.yml up -d'
+                // Debug: wait-for-services.sh dosyası gerçekten var mı?
+                sh "docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/"
                 // Wait for the application inside the compose network to be healthy by using the maven container
                 sh "docker-compose -f docker-compose.ci.yml run --rm maven bash -lc '/workspace/scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 120'"
             }
