@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
     # Host portu publish ETME, sadece compose network içinde erişim
     ports:
-      - "5433:5432" # CI için sabit, localde çakışmaz
+      - "2121:5432" # CI için sabit, localde çakışmaz
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
