@@ -20,6 +20,7 @@ pipeline {
                 sh 'echo "JENKINS_WORKSPACE=$WORKSPACE" > .env'
                 sh 'ls -l scripts/ || echo "scripts klasörü yok"'
                 sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok"'
+                sh 'echo "[DEBUG] Checkout sonrası scripts klasörü ve wait-for-services.sh durumu yukarıda"'
             }
         }
         stage('Clean Docker & Workspace') {
@@ -39,6 +40,8 @@ pipeline {
                 retry(3) {
                     sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml build'
                 }
+                sh 'ls -l scripts/ || echo "scripts klasörü yok (docker-compose up öncesi)"'
+                sh 'cat scripts/wait-for-services.sh || echo "wait-for-services.sh yok (docker-compose up öncesi)"'
                 sh 'cd $WORKSPACE && docker-compose -f docker-compose.ci.yml up -d --force-recreate'
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven ls -l /workspace/scripts/ || echo '/workspace/scripts/ yok'"
                 sh "cd $WORKSPACE && docker-compose -f docker-compose.ci.yml run --rm maven cat /workspace/scripts/wait-for-services.sh || echo 'wait-for-services.sh içeriği okunamadı'"
