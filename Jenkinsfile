@@ -90,8 +90,6 @@ pipeline {
             steps {
                 sh 'mvn -Dtest=AdminTest test -Pselenium'
             }
-        }
-    }
     post {
         always {
             sh 'docker-compose -f docker-compose.ci.yml down --volumes --remove-orphans || true'
@@ -174,5 +172,5 @@ pipeline {
             sh 'docker system prune -af --volumes || true'
         }
     }
-}
+
 
