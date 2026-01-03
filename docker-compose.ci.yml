@@ -46,6 +46,7 @@ services:
       dockerfile: docker/maven-with-docker/Dockerfile
     volumes:
       - ./:/workspace
+      - ./scripts:/workspace/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /workspace
     environment:
