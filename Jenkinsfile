@@ -44,6 +44,107 @@ pipeline {
                 sh 'bash scripts/wait-for-services.sh http://app:8080/actuator/health http://selenium-hub:4444/status 30'
             }
         }
+        stage('Selenium - CareerGoalTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.CareerGoalTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - InvalidLoginTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.InvalidLoginTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - LogoutTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.LogoutTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - IlanTesti') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.IlanTesti -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - PanelAccessTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.PanelAccessTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - GirisTesti') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.GirisTesti -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - SmokeTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.SmokeTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - SearchJobTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.SearchJobTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - AccessWithoutLoginRedirectTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.AccessWithoutLoginRedirectTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        stage('Selenium - HomePageTest') {
+            environment {
+                APP_BASE_URL = 'http://app:8080'
+                SELENIUM_REMOTE_URL = 'http://selenium-hub:4444/wd/hub'
+            }
+            steps {
+                sh './mvnw test -Dtest=com.example.careermanagement.selenium.HomePageTest -Dselenium.remote.url=$SELENIUM_REMOTE_URL'
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+        // Python ile yazılmış senaryoları da çalıştırmak isterseniz aşağıdaki gibi bırakabilirsiniz
         stage('Selenium Test Scenario 1') {
             steps {
                 sh 'python scripts/selenium_test1.py'

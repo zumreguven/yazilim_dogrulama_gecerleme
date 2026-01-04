@@ -15,7 +15,9 @@ import java.time.Duration;
 public class BaseSeleniumTest {
     protected WebDriver driver;
     // Make base URL configurable via -Dapp.baseUrl (default matches docker-compose.ci.yml)
-    protected final String BASE_URL = System.getProperty("app.baseUrl", "http://localhost:8080");
+        // BASE_URL artık hem ortam değişkeninden hem de sistem özelliğinden alınabilir
+        protected final String BASE_URL =
+            System.getenv().getOrDefault("APP_BASE_URL", System.getProperty("app.baseUrl", "http://localhost:8080"));
 
     @BeforeEach
     public void setUp() throws MalformedURLException {
@@ -85,10 +87,17 @@ public class BaseSeleniumTest {
         // Add a cookie that the test Jwt filter recognizes as authentication
         // Ensure we're on the app domain before adding the cookie
         driver.get(BASE_URL + "/");
-        org.openqa.selenium.Cookie c = new org.openqa.selenium.Cookie.Builder("test-auth", username)
+        String domain = null;
+        try {
+            domain = new java.net.URL(BASE_URL).getHost();
+        } catch (Exception ignored) {}
+        org.openqa.selenium.Cookie.Builder builder = new org.openqa.selenium.Cookie.Builder("test-auth", username)
                 .path("/")
-                .isHttpOnly(false)
-                .build();
+                .isHttpOnly(false);
+        if (domain != null && !domain.equals("localhost")) {
+            builder.domain(domain);
+        }
+        org.openqa.selenium.Cookie c = builder.build();
         driver.manage().addCookie(c);
         // Visit a protected page to let the cookie be sent and the filter authenticate the session
         driver.get(BASE_URL + "/panel");
