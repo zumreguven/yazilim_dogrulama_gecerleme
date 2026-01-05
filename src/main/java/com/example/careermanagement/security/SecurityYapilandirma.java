@@ -18,7 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityYapilandirma {
 
         // ...existing code...
-    private final YetkisizGirisHatasi yetkisizGirisHatasi;
+        private final KullaniciDetayServisi kullaniciDetayServisi;
+        private final YetkisizGirisHatasi yetkisizGirisHatasi;
 
     public SecurityYapilandirma(KullaniciDetayServisi kullaniciDetayServisi,
                                 YetkisizGirisHatasi yetkisizGirisHatasi) {
