@@ -1,7 +1,7 @@
 package com.example.careermanagement.selenium;
 
 import org.openqa.selenium.By;
-import org.junit.jupiter.api.Assertions;
+// ...existing code...
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

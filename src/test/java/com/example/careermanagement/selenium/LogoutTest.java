@@ -28,7 +28,6 @@ public class LogoutTest extends BaseSeleniumTest {
     }
 
     // Keep the original UI login helper for local debugging if needed
-    private void girisYap() {
         driver.get(BASE_URL + "/giris.html");
         driver.findElement(By.id("kullaniciAdi")).sendKeys("admin");
         driver.findElement(By.id("sifre")).sendKeys("sifre123");
@@ -38,4 +37,5 @@ public class LogoutTest extends BaseSeleniumTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a[href='/cikis']")));
     }
+    
 }

@@ -1,7 +1,7 @@
 package com.example.careermanagement.selenium;
 
 import org.junit.jupiter.api.Tag;
-import org.openqa.selenium.By;
+// ...existing code...
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.junit.jupiter.api.Assertions;

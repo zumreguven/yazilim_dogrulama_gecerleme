@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityYapilandirma {
 
-    private final KullaniciDetayServisi kullaniciDetayServisi;
+        // ...existing code...
     private final YetkisizGirisHatasi yetkisizGirisHatasi;
 
     public SecurityYapilandirma(KullaniciDetayServisi kullaniciDetayServisi,

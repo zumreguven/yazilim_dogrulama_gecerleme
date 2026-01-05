@@ -1,7 +1,7 @@
 package com.example.careermanagement.config;
 
 import com.example.careermanagement.entity.Kullanici;
-import com.example.careermanagement.entity.RolTuru;
+// ...existing code...
 import com.example.careermanagement.repository.KullaniciRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

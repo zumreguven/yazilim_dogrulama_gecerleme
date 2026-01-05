@@ -24,7 +24,7 @@ public class SmokeTest extends BaseSeleniumTest {
 
         // Wait up to 5s for 3 .ilan-item elements to appear
         Instant deadline = Instant.now().plus(Duration.ofSeconds(5));
-        List elements;
+        List<?> elements;
         while (true) {
             elements = driver.findElements(By.className("ilan-item"));
             if (elements.size() >= 3 || Instant.now().isAfter(deadline)) break;
