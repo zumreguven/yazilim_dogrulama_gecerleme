@@ -7,10 +7,12 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.io.IOException;
+import java.time.Duration;
+import java.io.IOException;
 
 public class BaseSeleniumTest {
     protected WebDriver driver;
@@ -31,7 +33,10 @@ public class BaseSeleniumTest {
         options.addArguments("--window-size=1920,1080");
 
         // If a remote Selenium hub is provided, use RemoteWebDriver with retries
-        String remoteUrl = System.getProperty("selenium.remote.url");
+        String remoteUrl = System.getenv("SELENIUM_REMOTE_URL");
+        if (remoteUrl == null || remoteUrl.isBlank()) {
+            remoteUrl = System.getProperty("selenium.remote.url");
+        }
         if (remoteUrl != null && !remoteUrl.isBlank()) {
             int attempts = 0;
             int maxAttempts = 8; // ~16s with 2s sleeps
@@ -44,7 +49,7 @@ public class BaseSeleniumTest {
                     if (attempts >= maxAttempts) {
                         throw new RuntimeException("Failed to connect to Remote Selenium at " + remoteUrl + " after " + attempts + " attempts", e);
                     }
-                    try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
+                    try { Thread.sleep(2000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
                 }
             }
         } else {
@@ -90,7 +95,7 @@ public class BaseSeleniumTest {
         String domain = null;
         try {
             domain = new java.net.URL(BASE_URL).getHost();
-        } catch (Exception ignored) {}
+        } catch (IOException | RuntimeException e) { e.printStackTrace(); }
         org.openqa.selenium.Cookie.Builder builder = new org.openqa.selenium.Cookie.Builder("test-auth", username)
                 .path("/")
                 .isHttpOnly(false);

@@ -27,16 +27,5 @@ public class LogoutTest extends BaseSeleniumTest {
         assertThat(driver.getCurrentUrl()).contains("/giris");
     }
 
-    // Keep the original UI login helper for local debugging if needed
-    private void girisYap() {
-        driver.get(BASE_URL + "/giris.html");
-        driver.findElement(By.id("kullaniciAdi")).sendKeys("admin");
-        driver.findElement(By.id("sifre")).sendKeys("sifre123");
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-
-        // Girişten sonra çıkış bağlantısının görünmesini bekle (daha stabil)
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a[href='/cikis']")));
-    }
-    
+    // ...existing code...
 }
