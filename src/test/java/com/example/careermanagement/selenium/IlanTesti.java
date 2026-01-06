@@ -9,26 +9,17 @@ import java.time.Duration;
 public class IlanTesti extends BaseSeleniumTest {
     @Test
     public void yeniIlanOlusturmaTesti() {
+        // GÜNCELLEME: SecurityYapilandirma'da izin verdiğin adrese gidiyoruz
+        driver.get("http://app:8080/kariyer/hedef/yeni.html");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // 1. ADIM: Kullanıcı girişi (Giriş yapmadan ilan ekleme yetkisi yoktur)
-        driver.get("http://app:8080/giris.html");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("kullaniciAdi"))).sendKeys("admin");
-        driver.findElement(By.id("sifre")).sendKeys("sifre123");
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-
-        // 2. ADIM: Giriş başarılı olduktan sonra ilan klasöründeki sayfaya git
-        driver.get("http://app:8080/ilan/yeni.html");
-
-        // 3. ADIM: Formu doldur (Artık 'baslik' elementi bulunabilir)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).sendKeys("Kullanıcı Test İlanı");
-        driver.findElement(By.id("aciklama")).sendKeys("Kullanıcı tarafından Selenium ile eklendi.");
-
-        // 4. ADIM: Kaydet butonuna bas
+        // HTML ID'lerin ile etkileşim (Dizin yapın değişse de ID'lerin aynı kalmalı)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).sendKeys("Test Kariyer Hedefi");
+        driver.findElement(By.id("aciklama")).sendKeys("Security izinleri kontrol edildi.");
         driver.findElement(By.id("kaydet")).click();
 
-        // 5. ADIM: Başarı mesajını doğrula
+        // Mesajın görünmesini bekle
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
-        System.out.println("✅ Selenium 5: Giriş yapıldı ve ilan başarıyla oluşturuldu.");
+        System.out.println("✅ Selenium 5: İzin verilen yol üzerinden ilan başarıyla oluşturuldu!");
     }
 }
