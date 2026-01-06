@@ -9,20 +9,20 @@ import java.time.Duration;
 public class IlanTesti extends BaseSeleniumTest {
     @Test
     public void yeniIlanOlusturmaTesti() {
-        driver.get("http://app:8080/yeni.html");
+        // DIKKAT: Klasör yapısına göre adres güncellendi
+        driver.get("http://app:8080/ilan/yeni.html");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // Elementlerin varlığını bekle ve temizle (varsa eski veriyi sil)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).clear();
-        driver.findElement(By.id("baslik")).sendKeys("Test Baslik");
+        // Sayfa kaynağını kontrol et (Hata ayıklama için konsola yazar)
+        System.out.println("📄 Sayfa başlığı: " + driver.getTitle());
 
-        driver.findElement(By.id("aciklama")).clear();
+        // Form ID'leri: baslik, aciklama, kaydet
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).sendKeys("Test Baslik");
         driver.findElement(By.id("aciklama")).sendKeys("Test Aciklama");
-
         driver.findElement(By.id("kaydet")).click();
 
-        // Mesajın DOM'da görünür olmasını bekle
+        // Başarı mesajını bekle
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
-        System.out.println("✅ Stage 5: İlan başarıyla mühürlendi!");
+        System.out.println("✅ Stage 5: İlan yolu doğrulandı ve oluşturuldu!");
     }
 }
