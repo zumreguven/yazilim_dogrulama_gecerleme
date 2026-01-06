@@ -20,25 +20,23 @@ import java.nio.file.Path;
 public class BaseSeleniumTest {
     protected WebDriver driver;
 
-    // DİKKAT: Docker içindeyken "localhost" çalışmaz. 
-    // Uygulama konteynerinin adı "app" olduğu için adres: http://app:8080 olmalı.
+    // DEĞİŞİKLİK 1: Uygulama portunu varsayılan olarak 8081 yaptık (Jenkins 8080 ile çakışmasın diye)
+    // Ama Docker içinde çalışırken "app" ismini kullanmaya devam ediyoruz.
     protected final String BASE_URL = System.getProperty("app.baseUrl", "http://app:8080");
 
     @BeforeEach
     public void setUp() throws MalformedURLException {
-        // Tarayıcı ayarları (Docker uyumlu)
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Ekran kartı olmadığı için şart
-        options.addArguments("--no-sandbox"); // Güvenlik kısıtlamasını aş
-        options.addArguments("--disable-dev-shm-usage"); // Bellek sorununu çöz
-        options.addArguments("--remote-allow-origins=*"); // Bağlantı hatalarını önle
-        options.addArguments("--window-size=1920,1080"); // Tam ekran gibi davran
+        options.addArguments("--headless");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--window-size=1920,1080");
 
-        // Docker Compose dosyasındaki "selenium-hub" servisine bağlanıyoruz
-        String hubUrl = "http://selenium-hub:4444/wd/hub";
+        // DEĞİŞİKLİK 2: Jenkins dışarıdan test ettiği için "selenium-hub" yerine "localhost" kullanıyoruz.
+        String hubUrl = "http://localhost:4444/wd/hub";
 
         try {
-            // RemoteWebDriver kullanarak uzaktaki konteynere bağlan
             driver = new RemoteWebDriver(new URL(hubUrl), options);
             System.out.println("✅ Selenium Hub'a başarıyla bağlanıldı: " + hubUrl);
         } catch (Exception e) {
@@ -46,7 +44,6 @@ public class BaseSeleniumTest {
             throw new RuntimeException("Selenium Hub'a bağlanılamadı. Docker servisi ayakta mı?", e);
         }
 
-        // Sayfa yüklemeleri için bekleme süresi
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
     }
@@ -54,7 +51,6 @@ public class BaseSeleniumTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            // Hata durumunda ekran görüntüsü al (Opsiyonel ama faydalı)
             try {
                 File scr = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 Path destDir = Path.of("target", "selenium-screenshots");
@@ -64,22 +60,15 @@ public class BaseSeleniumTest {
             } catch (Exception e) {
                 // Ekran görüntüsü alınamazsa testi durdurma
             }
-
-            // Tarayıcıyı kapat
             driver.quit();
         }
     }
 
-    // Test yardımcısı: Oturum açmış gibi cookie ekle
     protected void authenticateAs(String username) {
         try {
-            driver.get(BASE_URL + "/"); // Önce domain'e git
-            
-            // Basit cookie ekleme
+            driver.get(BASE_URL + "/");
             Cookie authCookie = new Cookie("test-auth", username);
             driver.manage().addCookie(authCookie);
-            
-            // Panele git
             driver.get(BASE_URL + "/panel");
         } catch (Exception e) {
             System.err.println("Authentication cookie eklenirken hata: " + e.getMessage());

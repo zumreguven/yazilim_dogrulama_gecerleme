@@ -7,15 +7,15 @@ services:
       POSTGRES_DB: career_management
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    # Host portu publish ETME, sadece compose network içinde erişim
     ports:
-      - "32121:5432" # CI için sabit, localde çakışmaz
+      - "32121:5432" # CI veritabanı portu
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d career_management"]
       interval: 5s
       timeout: 5s
+
   app:
     build:
       context: .
@@ -26,8 +26,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-
-      # Selenium testlerin RemoteWebDriver ile bağlanması için
+      # Uygulama içinden Hub'a erişim gerekirse diye:
       SELENIUM_REMOTE_URL: http://selenium-hub:4444/wd/hub
     depends_on:
       - postgres
@@ -36,8 +35,9 @@ services:
       - ./scripts:/workspace/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "38082:8080" # CI için sabit, localde çakışmaz
-    # 8082 portundan host'a publish edildi
+      # DİKKAT: Jenkins 8080'i kullandığı için burayı 8081 yaptık.
+      # Tarayıcıdan siteye girmek için: http://localhost:8081
+      - "8081:8080"
 
   maven:
     build:
@@ -54,15 +54,12 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       SELENIUM_REMOTE_URL: http://selenium-hub:4444/wd/hub
-      APP_BASE_URL: http://app:8081
-      # Prefer connecting to a local Docker-in-Docker daemon for Testcontainers on macOS
+      APP_BASE_URL: http://app:8080
       DOCKER_HOST: tcp://docker-dind:2375
     depends_on:
       - app
       - docker-dind
-    # Keep the container running idle so `docker compose up` doesn't execute `mvn` with no goals
     command: tail -f /dev/null
-    # This service is used to run Maven commands inside the compose network so tests can reach other services.
 
   docker-dind:
     image: docker:24-dind
@@ -78,6 +75,9 @@ services:
   selenium-hub:
     image: selenium/hub:4.11.0
     platform: linux/amd64
+    ports:
+      # DİKKAT: Testlerin localhost üzerinden bağlanabilmesi için bu portu açtık.
+      - "4444:4444"
     healthcheck:
       test: ["CMD-SHELL", "curl -sSf http://localhost:4444/status | grep -q '\"ready\":true' || exit 1"]
       interval: 5s
