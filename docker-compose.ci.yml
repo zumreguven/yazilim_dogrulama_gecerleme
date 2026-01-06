@@ -40,8 +40,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: build          # <--- KRİTİK HAMLE: Maven olan aşamada dur!
     working_dir: /app
-    # DNS AYARI EKLENDİ - İŞTE ÇÖZÜM BU 👇
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -58,7 +58,7 @@ services:
     depends_on:
       - app
       - docker-dind
-    command: tail -f /dev/null
+    command: tail -f /dev/null  # <--- KRİTİK HAMLE 2: Sakın kapanma, bekle!
 
   docker-dind:
     image: docker:24-dind
