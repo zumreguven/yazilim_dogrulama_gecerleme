@@ -17,24 +17,15 @@ public class IlanTesti extends BaseSeleniumTest {
         driver.get("http://app:8080/yen");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
-        // 1. Başlık kutusu gelene kadar bekle ve yaz
+        // Form elemanlarını bekle ve doldur
         WebElement baslik = wait.until(ExpectedConditions.elementToBeClickable(By.id("baslik")));
-        baslik.clear();
-        baslik.sendKeys("Yazılım Mühendisi");
+        baslik.sendKeys("Test Uzmanı");
 
-        // 2. Açıklama kutusunu doldur
-        WebElement aciklama = driver.findElement(By.id("aciklama"));
-        aciklama.clear();
-        aciklama.sendKeys("Java ve Selenium bilen adaylar aranıyor.");
+        driver.findElement(By.id("aciklama")).sendKeys("Otomasyon testi yapabilen.");
+        driver.findElement(By.id("kaydet")).click();
 
-        // 3. Kaydet butonuna bas
-        WebElement kaydet = driver.findElement(By.id("kaydet"));
-        kaydet.click();
-
-        // 4. Mesajın (id="mesaj") görünmesini bekle ve doğrula
-        WebElement sonucMesaji = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
-        System.out.println("✅ İlan Mesajı: " + sonucMesaji.getText());
-
-        Assertions.assertTrue(sonucMesaji.getText().contains("başarıyla"), "İlan oluşturma başarısız!");
+        // Başarı mesajını bekle
+        WebElement mesaj = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
+        Assertions.assertTrue(mesaj.getText().contains("başarıyla"), "Kayıt işlemi başarısız!");
     }
 }
