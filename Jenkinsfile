@@ -43,11 +43,15 @@ pipeline {
         }
 
         stage('Wait for Services') {
-            steps {
-                // Servislerin (ozellikle DB'nin) tam olarak acilmasini bekle
-                sh 'chmod +x ./scripts/wait-for-services.sh'
-                sh './scripts/wait-for-services.sh'
-            }
+                    steps {
+                        // Servislerin tam olarak acilmasini bekle
+                        sh 'chmod +x ./scripts/wait-for-services.sh'
+
+                        // Uygulamaya uyanmasi icin 60 saniye ekstra sure taniyalim
+                        sh 'sleep 60'
+
+                        sh './scripts/wait-for-services.sh'
+                    }
         }
 
         stage('Unit Tests') {
