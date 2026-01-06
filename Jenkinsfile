@@ -44,13 +44,12 @@ pipeline {
 
         stage('Wait for Services') {
             steps {
-                // Servislerin tam olarak acilmasini bekle
-                sh 'chmod +x ./scripts/wait-for-services.sh'
-                
-                // Uygulamaya uyanmasi icin 60 saniye ekstra sure taniyalim
-                sh 'sleep 60' 
-                
-                sh './scripts/wait-for-services.sh'
+                script {
+                    echo "Uygulamanin ve veritabaninin tam olarak acilmasi icin 180 saniye (3 dakika) bekleniyor..."
+                    // Script yerine dogrudan bekleme komutu
+                    sh 'sleep 180'
+                    echo "Bekleme suresi bitti, testlere baslaniyor."
+                }
             }
         }
 
