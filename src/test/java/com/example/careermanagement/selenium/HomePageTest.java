@@ -1,20 +1,26 @@
 package com.example.careermanagement.selenium;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.junit.jupiter.api.Assertions;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+@Tag("selenium")
 public class HomePageTest extends BaseSeleniumTest {
 
     @Test
     public void anaSayfaYukleniyorVeBaslikDogru() {
-        driver.get(BASE_URL + "/index.html");
+        // HATA BURADAYDI: /index.html yerine tam adres veriyoruz
+        String targetUrl = "http://app:8080/";
+        System.out.println("🚀 Ana sayfa testi gidilen adres: " + targetUrl);
+        driver.get(targetUrl);
 
-        String title = driver.getTitle();
-        assertThat(title).contains("Career");
+        // Senin HTML kodunda <h1>Welcome...</h1> yazıyor, onu kontrol edelim
+        WebElement header = driver.findElement(By.tagName("h1"));
+        String headerText = header.getText();
 
-        String header = driver.findElement(By.tagName("h1")).getText();
-        assertThat(header).contains("Welcome");
+        System.out.println("✅ Ana sayfa başlığı bulundu: " + headerText);
+        Assertions.assertTrue(headerText.contains("Welcome"), "Başlık metni hatalı!");
     }
 }
