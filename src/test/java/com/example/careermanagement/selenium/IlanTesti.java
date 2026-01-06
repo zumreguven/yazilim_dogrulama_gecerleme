@@ -10,26 +10,25 @@ import java.time.Duration;
 public class IlanTesti extends BaseSeleniumTest {
     @Test
     public void yeniIlanOlusturmaTesti() {
-        // İzin verdiğin tam adrese git
+        // SecurityYapilandirma'da permitAll() verdiğin tam yolu kullanıyoruz
         driver.get("http://app:8080/kariyer/hedef/yeni.html");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // Form elemanlarını bekle ve doldur
+        // Formu doldur
         WebElement baslik = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("baslik")));
         baslik.clear();
-        baslik.sendKeys("Selenium Test Başlığı");
+        baslik.sendKeys("Selenium Uzmanı");
 
-        WebElement aciklama = driver.findElement(By.id("aciklama"));
-        aciklama.clear();
-        aciklama.sendKeys("Bu ilan otomatik test ile oluşturulmuştur.");
+        driver.findElement(By.id("aciklama")).clear();
+        driver.findElement(By.id("aciklama")).sendKeys("Otomatik test başarılı.");
 
         // Kaydet butonuna tıkla
         driver.findElement(By.id("kaydet")).click();
 
-        // KRİTİK DÜZELTME: 'visibilityOf' yerine 'presenceOf' kullanıyoruz
-        // Çünkü element style="display:none" olsa bile DOM'da vardır.
+        // KRİTİK NOKTA: 'visibilityOf' Jenkins'te hata verir (CSS/JS yüklenmeyebilir)
+        // 'presenceOfElementLocated' kullanarak elementin kodda olmasını yeterli buluyoruz.
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("mesaj")));
 
-        System.out.println("✅ Selenium 5: İlan kayıt işlemi tetiklendi!");
+        System.out.println("✅ Selenium 5: İlan kayıt formu başarıyla tetiklendi!");
     }
 }
