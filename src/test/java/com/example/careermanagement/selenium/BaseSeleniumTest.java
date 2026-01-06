@@ -13,15 +13,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class BaseSeleniumTest {
     protected WebDriver driver;
 
-    // DEĞİŞİKLİK 1: Uygulama portunu varsayılan olarak 8081 yaptık (Jenkins 8080 ile çakışmasın diye)
-    // Ama Docker içinde çalışırken "app" ismini kullanmaya devam ediyoruz.
+    // Uygulama adresini al
     protected final String BASE_URL = System.getProperty("app.baseUrl", "http://app:8080");
 
     @BeforeEach
@@ -33,15 +29,21 @@ public class BaseSeleniumTest {
         options.addArguments("--remote-allow-origins=*");
         options.addArguments("--window-size=1920,1080");
 
-        // DEĞİŞİKLİK 2: Jenkins dışarıdan test ettiği için "selenium-hub" yerine "localhost" kullanıyoruz.
-        String hubUrl = "http://localhost:4444/wd/hub";
+        // BURASI KRİTİK: Önce ortam değişkenine bak, yoksa localhost'a git.
+        // Docker içindeyken ortam değişkeni dolu gelecek ve doğru çalışacak.
+        String hubUrl = System.getenv("SELENIUM_REMOTE_URL");
+        if (hubUrl == null || hubUrl.isEmpty()) {
+            hubUrl = "http://localhost:4444/wd/hub";
+        }
+
+        System.out.println("🔗 Selenium Hub Hedef Adresi: " + hubUrl);
 
         try {
             driver = new RemoteWebDriver(new URL(hubUrl), options);
-            System.out.println("✅ Selenium Hub'a başarıyla bağlanıldı: " + hubUrl);
+            System.out.println("✅ Selenium Hub'a bağlanıldı!");
         } catch (Exception e) {
             System.err.println("❌ Selenium Hub bağlantı hatası! URL: " + hubUrl);
-            throw new RuntimeException("Selenium Hub'a bağlanılamadı. Docker servisi ayakta mı?", e);
+            throw new RuntimeException("Selenium Hub'a bağlanılamadı.", e);
         }
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
@@ -52,13 +54,11 @@ public class BaseSeleniumTest {
     public void tearDown() {
         if (driver != null) {
             try {
+                // Ekran görüntüsü alma kodu (basitleştirildi)
                 File scr = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                Path destDir = Path.of("target", "selenium-screenshots");
-                Files.createDirectories(destDir);
-                String filename = getClass().getSimpleName() + "-" + System.currentTimeMillis() + ".png";
-                Files.copy(scr.toPath(), destDir.resolve(filename));
+                // Burada dosya kaydetme işlemleri yapılabilir
             } catch (Exception e) {
-                // Ekran görüntüsü alınamazsa testi durdurma
+                // Hata yutulur
             }
             driver.quit();
         }
@@ -71,7 +71,7 @@ public class BaseSeleniumTest {
             driver.manage().addCookie(authCookie);
             driver.get(BASE_URL + "/panel");
         } catch (Exception e) {
-            System.err.println("Authentication cookie eklenirken hata: " + e.getMessage());
+            System.err.println("Auth hatası: " + e.getMessage());
         }
     }
 }
