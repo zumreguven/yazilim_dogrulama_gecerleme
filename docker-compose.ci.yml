@@ -39,13 +39,13 @@ services:
   maven:
     build:
       context: .
-      dockerfile: docker/maven-with-docker/Dockerfile
+      dockerfile: Dockerfile   # Kendi ana Dockerfile'ını kullanıyoruz
+      target: build            # DİKKAT: Sadece kodların olduğu aşamayı alıyoruz
+    working_dir: /app          # Kodların kopyalandığı yer burası
     volumes:
-      - ./:/workspace                  # <-- KRİTİK AYAR BU
       - ./scripts:/workspace/scripts:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      # - .:/workspace  <-- BU BAŞ BELASI SATIRI SİLDİK, ARTIK GEREK YOK!
       - ./jenkins-m2:/root/.m2
-    working_dir: /workspace
     environment:
       DB_HOST: postgres
       DB_USER: postgres
