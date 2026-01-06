@@ -5,22 +5,24 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 @Tag("selenium")
 public class HomePageTest extends BaseSeleniumTest {
 
     @Test
     public void anaSayfaYukleniyorVeBaslikDogru() {
-        // HATA BURADAYDI: /index.html yerine tam adres veriyoruz
-        String targetUrl = "http://app:8080/";
-        System.out.println("🚀 Ana sayfa testi gidilen adres: " + targetUrl);
-        driver.get(targetUrl);
+        driver.get("http://app:8080/");
 
-        // Senin HTML kodunda <h1>Welcome...</h1> yazıyor, onu kontrol edelim
-        WebElement header = driver.findElement(By.tagName("h1"));
-        String headerText = header.getText();
+        // Sayfanın yüklenmesi için 10 saniye tolerans tanıyalım
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        System.out.println("✅ Ana sayfa başlığı bulundu: " + headerText);
-        Assertions.assertTrue(headerText.contains("Welcome"), "Başlık metni hatalı!");
+        // h1 etiketini bulana kadar bekle
+        WebElement header = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("h1")));
+
+        System.out.println("✅ Ana sayfa başlığı doğrulandı: " + header.getText());
+        Assertions.assertTrue(header.getText().contains("Welcome"), "Başlık hatalı!");
     }
 }
