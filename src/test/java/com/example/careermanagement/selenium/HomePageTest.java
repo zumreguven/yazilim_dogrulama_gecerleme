@@ -2,6 +2,7 @@ package com.example.careermanagement.selenium;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -12,17 +13,15 @@ public class HomePageTest extends BaseSeleniumTest {
     @Test
     public void anaSayfaYukleniyorVeBaslikDogru() {
         driver.get("http://app:8080/");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // Sayfanın yüklenmesini bekle
-        new WebDriverWait(driver, Duration.ofSeconds(10)).until(
-                d -> d.getPageSource().length() > 0
-        );
+        // Sayfa kaynağının gelmesini bekle
+        wait.until(d -> d.getPageSource().contains("Kariyer") || d.getPageSource().contains("Welcome"));
 
-        String source = driver.getPageSource();
-        System.out.println("✅ Ana sayfa kaynağı alındı.");
+        String title = driver.getTitle();
+        System.out.println("✅ Ana Sayfa Title: " + title);
 
-        // h1 etiketi yerine genel bir kontrol yapalım, hata riskini sıfırlayalım
-        Assertions.assertTrue(source.contains("Kariyer") || source.contains("Welcome"),
-                "Ana sayfa içeriği beklenen kelimeleri içermiyor!");
+        // Sayfada 'ara' butonu var mı? (index.html'indeki kritik buton)
+        Assertions.assertNotNull(driver.findElement(By.id("ara")), "Arama butonu bulunamadı!");
     }
 }
