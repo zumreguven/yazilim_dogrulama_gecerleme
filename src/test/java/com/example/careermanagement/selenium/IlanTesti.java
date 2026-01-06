@@ -9,20 +9,20 @@ import java.time.Duration;
 public class IlanTesti extends BaseSeleniumTest {
     @Test
     public void yeniIlanOlusturmaTesti() {
-        // Dosya ismini yeni.html olarak düzelttik
         driver.get("http://app:8080/yeni.html");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // Senin HTML formundaki ID'ler: baslik, aciklama, kaydet
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).sendKeys("Yazılım Mühendisi");
-        driver.findElement(By.id("aciklama")).sendKeys("Java ve Selenium bilen takım arkadaşı arıyoruz.");
+        // Elementlerin varlığını bekle ve temizle (varsa eski veriyi sil)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).clear();
+        driver.findElement(By.id("baslik")).sendKeys("Test Baslik");
 
-        // Kaydet butonuna tıkla
+        driver.findElement(By.id("aciklama")).clear();
+        driver.findElement(By.id("aciklama")).sendKeys("Test Aciklama");
+
         driver.findElement(By.id("kaydet")).click();
 
-        // Senin script'indeki 'mesaj' ID'li div'in görünür olmasını bekle
+        // Mesajın DOM'da görünür olmasını bekle
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
-
-        System.out.println("✅ Selenium 5: Yeni ilan başarıyla oluşturuldu!");
+        System.out.println("✅ Stage 5: İlan başarıyla mühürlendi!");
     }
 }

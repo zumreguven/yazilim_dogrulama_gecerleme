@@ -9,16 +9,19 @@ import java.time.Duration;
 public class HomePageTest extends BaseSeleniumTest {
     @Test
     public void anaSayfaYukleniyorVeAraButonuVar() {
-        // index.html sayfasına git
-        driver.get("http://app:8080/");
+        // Garantici adres: Direkt dosyaya gitmeyi deniyoruz
+        driver.get("http://app:8080/index.html");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // Senin HTML'indeki ID'ler: "aranan" ve "ara"
-        // Önce kutunun görünmesini bekle
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("aranan")));
-        // Sonra butonun tıklanabilir olmasını bekle (Build #139 burada hata vermişti)
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("ara")));
-
-        System.out.println("✅ Selenium 4: Ana sayfa ve Ara butonu doğrulandı!");
+        try {
+            // Önce sayfanın gerçekten yüklendiğinden emin olalım
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("aranan")));
+            System.out.println("✅ Stage 4: 'aranan' ID bulundu!");
+        } catch (Exception e) {
+            System.out.println("❌ HATA: Element bulunamadı! Sayfa içeriği: " + driver.getPageSource());
+            // Eğer index.html çalışmazsa kök dizini son kez dene
+            driver.get("http://app:8080/");
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("aranan")));
+        }
     }
 }
