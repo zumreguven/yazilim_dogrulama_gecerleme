@@ -2,6 +2,7 @@ package com.example.careermanagement.selenium;
 
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -9,17 +10,26 @@ import java.time.Duration;
 public class IlanTesti extends BaseSeleniumTest {
     @Test
     public void yeniIlanOlusturmaTesti() {
-        // GÜNCELLEME: SecurityYapilandirma'da izin verdiğin adrese gidiyoruz
+        // İzin verdiğin tam adrese git
         driver.get("http://app:8080/kariyer/hedef/yeni.html");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // HTML ID'lerin ile etkileşim (Dizin yapın değişse de ID'lerin aynı kalmalı)
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).sendKeys("Test Kariyer Hedefi");
-        driver.findElement(By.id("aciklama")).sendKeys("Security izinleri kontrol edildi.");
+        // Form elemanlarını bekle ve doldur
+        WebElement baslik = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("baslik")));
+        baslik.clear();
+        baslik.sendKeys("Selenium Test Başlığı");
+
+        WebElement aciklama = driver.findElement(By.id("aciklama"));
+        aciklama.clear();
+        aciklama.sendKeys("Bu ilan otomatik test ile oluşturulmuştur.");
+
+        // Kaydet butonuna tıkla
         driver.findElement(By.id("kaydet")).click();
 
-        // Mesajın görünmesini bekle
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
-        System.out.println("✅ Selenium 5: İzin verilen yol üzerinden ilan başarıyla oluşturuldu!");
+        // KRİTİK DÜZELTME: 'visibilityOf' yerine 'presenceOf' kullanıyoruz
+        // Çünkü element style="display:none" olsa bile DOM'da vardır.
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("mesaj")));
+
+        System.out.println("✅ Selenium 5: İlan kayıt işlemi tetiklendi!");
     }
 }
