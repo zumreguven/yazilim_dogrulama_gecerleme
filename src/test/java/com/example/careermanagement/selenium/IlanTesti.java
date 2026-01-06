@@ -9,20 +9,24 @@ import java.time.Duration;
 public class IlanTesti extends BaseSeleniumTest {
     @Test
     public void yeniIlanOlusturmaTesti() {
-        // DIKKAT: Klasör yapısına göre adres güncellendi
-        driver.get("http://app:8080/ilan/yeni.html");
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-        // Sayfa kaynağını kontrol et (Hata ayıklama için konsola yazar)
-        System.out.println("📄 Sayfa başlığı: " + driver.getTitle());
+        // 1. ÖNCE GİRİŞ YAP (Security engeline takılmamak için)
+        driver.get("http://app:8080/giris.html");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("kullaniciAdi"))).sendKeys("admin");
+        driver.findElement(By.id("sifre")).sendKeys("sifre123");
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        // Form ID'leri: baslik, aciklama, kaydet
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).sendKeys("Test Baslik");
-        driver.findElement(By.id("aciklama")).sendKeys("Test Aciklama");
+        // 2. ŞİMDİ İLAN SAYFASINA GİT
+        driver.get("http://app:8080/ilan/yeni.html");
+
+        // 3. FORM DOLDUR (Şimdi 'baslik' görünür olacak)
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("baslik"))).sendKeys("Test Mühendisi");
+        driver.findElement(By.id("aciklama")).sendKeys("Selenium uzmanı.");
         driver.findElement(By.id("kaydet")).click();
 
-        // Başarı mesajını bekle
+        // 4. BAŞARI MESAJINI DOĞRULA
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
-        System.out.println("✅ Stage 5: İlan yolu doğrulandı ve oluşturuldu!");
+        System.out.println("✅ Selenium 5: Giriş yapıldı ve ilan başarıyla oluşturuldu!");
     }
 }
