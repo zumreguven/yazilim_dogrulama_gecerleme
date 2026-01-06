@@ -1,34 +1,43 @@
 package com.example.careermanagement.selenium;
 
-import org.openqa.selenium.By;
-// ...existing code...
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+@Tag("selenium")
 public class IlanTesti extends BaseSeleniumTest {
 
     @Test
     public void yeniIlanOlusturmaTesti() {
-        // 1. Önce giriş yap
-        girisYap();
+        // 1. Yeni ilan sayfasına git (yen.html adresi)
+        String targetUrl = "http://app:8080/yen";
+        driver.get(targetUrl);
 
-        // 2. İlan oluştur sayfasına git
-        driver.get(BASE_URL + "/ilan/yeni");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // 3. Formu doldur
-        assertThat(driver.findElements(By.id("baslik")).size()).isGreaterThan(0);
-        driver.findElement(By.id("baslik")).sendKeys("Yazılım Uzmanı");
-        driver.findElement(By.id("aciklama")).sendKeys("Aranıyor yazılım uzmanı");
-        driver.findElement(By.id("kaydet")).click();
+        // 2. Senin HTML'indeki id="baslik" ve id="aciklama" kutularını doldur
+        WebElement baslikKutusu = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("baslik")));
+        WebElement aciklamaKutusu = driver.findElement(By.id("aciklama"));
+        WebElement kaydetButonu = driver.findElement(By.id("kaydet"));
 
-        // 4. Başarı mesajını kontrol et (alert-success görünmeli)
-        assertThat(driver.findElements(By.cssSelector(".alert-success")).size()).isGreaterThan(0);
+        baslikKutusu.sendKeys("Yazılım Test Mühendisi");
+        aciklamaKutusu.sendKeys("Jenkins ve Selenium bilen çalışma arkadaşları aranıyor.");
 
-    }
+        // 3. Kaydet'e bas
+        kaydetButonu.click();
 
-    private void girisYap() {
-        // Use the test helper to mark the browser as authenticated
-        authenticateAs("admin");
+        // 4. Başarı mesajının (id="mesaj") görünmesini bekle
+        WebElement basariMesaji = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mesaj")));
+
+        // 5. Mesajın içeriğini senin HTML'indeki "İlan başarıyla oluşturuldu" yazısıyla karşılaştır
+        String mesajMetni = basariMesaji.getText();
+        System.out.println("✅ İlan Sonuç Mesajı: " + mesajMetni);
+
+        Assertions.assertTrue(mesajMetni.contains("başarıyla oluşturuldu"), "İlan oluşturma mesajı hatalı!");
     }
 }

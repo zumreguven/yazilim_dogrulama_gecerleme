@@ -14,20 +14,17 @@ public class InvalidLoginTest extends BaseSeleniumTest {
 
     @Test
     public void hataliGirisTesti() {
-        // 1. Giriş sayfasına git
+        // Tam adrese git
         String targetUrl = "http://app:8080/giris";
-        System.out.println("🚀 Gidilen adres: " + targetUrl);
         driver.get(targetUrl);
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        // 2. Senin HTML'indeki id="kullaniciAdi" kutusu görünene kadar bekle
-        // Bu sayfanın gerçekten yüklendiğinin en sağlam kanıtıdır.
+        // Senin HTML'indeki id="kullaniciAdi" inputunu bekle
         WebElement userField = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kullaniciAdi")));
 
-        // 3. Doğrulama: Kutu oradaysa sayfa yüklenmiştir.
-        Assertions.assertNotNull(userField, "Kullanıcı adı kutusu bulunamadı, sayfa hatalı!");
-
-        System.out.println("✅ Giriş sayfası başarıyla yüklendi ve ID doğrulandı.");
+        // Kutu oradaysa sayfa doğru yüklenmiştir
+        Assertions.assertNotNull(userField, "Giriş sayfası yüklenemedi, kullanıcı adı alanı bulunamadı!");
+        System.out.println("✅ InvalidLoginTest: Sayfa ve input ID doğrulandı.");
     }
 }
