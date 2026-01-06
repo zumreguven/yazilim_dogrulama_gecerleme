@@ -39,12 +39,14 @@ services:
   maven:
     build:
       context: .
-      dockerfile: Dockerfile   # Kendi ana Dockerfile'ını kullanıyoruz
-      target: build            # DİKKAT: Sadece kodların olduğu aşamayı alıyoruz
-    working_dir: /app          # Kodların kopyalandığı yer burası
+      dockerfile: Dockerfile
+    working_dir: /app
+    # DNS AYARI EKLENDİ - İŞTE ÇÖZÜM BU 👇
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
       - ./scripts:/workspace/scripts:ro
-      # - .:/workspace  <-- BU BAŞ BELASI SATIRI SİLDİK, ARTIK GEREK YOK!
       - ./jenkins-m2:/root/.m2
     environment:
       DB_HOST: postgres
