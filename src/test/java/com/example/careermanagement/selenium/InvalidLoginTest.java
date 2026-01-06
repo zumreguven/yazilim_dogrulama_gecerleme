@@ -5,22 +5,29 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 @Tag("selenium")
 public class InvalidLoginTest extends BaseSeleniumTest {
 
     @Test
     public void hataliGirisTesti() {
-        // Tam URL adresi
+        // 1. Giriş sayfasına git
         String targetUrl = "http://app:8080/giris";
-        System.out.println("🚀 Hatalı giriş testi gidilen adres: " + targetUrl);
+        System.out.println("🚀 Gidilen adres: " + targetUrl);
         driver.get(targetUrl);
 
-        // Sayfanın yüklendiğini doğrula
-        String pageSource = driver.getPageSource();
-        Assertions.assertTrue(pageSource.contains("Giriş Yap") || pageSource.contains("Login"),
-                "Giriş sayfası yüklenemedi!");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        System.out.println("✅ Hatalı giriş sayfası başarıyla doğrulandı.");
+        // 2. Senin HTML'indeki id="kullaniciAdi" kutusu görünene kadar bekle
+        // Bu sayfanın gerçekten yüklendiğinin en sağlam kanıtıdır.
+        WebElement userField = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kullaniciAdi")));
+
+        // 3. Doğrulama: Kutu oradaysa sayfa yüklenmiştir.
+        Assertions.assertNotNull(userField, "Kullanıcı adı kutusu bulunamadı, sayfa hatalı!");
+
+        System.out.println("✅ Giriş sayfası başarıyla yüklendi ve ID doğrulandı.");
     }
 }
